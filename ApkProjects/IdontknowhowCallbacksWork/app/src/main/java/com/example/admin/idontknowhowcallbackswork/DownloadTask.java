@@ -1,13 +1,8 @@
 package com.example.admin.idontknowhowcallbackswork;
 
 import android.graphics.Bitmap;
-import android.os.Looper;
-import android.os.Message;
-import android.util.Log;
 
 import java.net.MalformedURLException;
-import java.util.logging.Handler;
-import java.util.logging.LogRecord;
 
 /**
  * Created by Admin on 13.09.2018.
@@ -17,22 +12,20 @@ public class DownloadTask implements Runnable {
 
     private static final String TAG = "DownloadTask";
 
-    private Rückruf callback;
+    private Download_Callback callback;
 
-    public DownloadTask(Rückruf rückruf){
+    public DownloadTask(Download_Callback downloadCallback) {
 
-        this.callback = rückruf;
+        this.callback = downloadCallback;
     }
 
     @Override
     public void run() {
 
-        Looper.prepare();
-
         Bitmap downloadedPicture;
         try {
 
-           downloadedPicture = Connection.downloadPicture("http://hintergrundbild.org/wallpaper/full/6/0/3/39009-hochaufloesende-hintergrundbilder-1920x1080-fuer-samsung-galaxy-s7.jpg");
+            downloadedPicture = Connection.downloadPicture("http://hintergrundbild.org/wallpaper/full/8/2/b/35334-tuerkis-hintergrundbilder-2048x1152-iphone.jpg");
 
            if(downloadedPicture != null){
 
@@ -44,12 +37,10 @@ public class DownloadTask implements Runnable {
         } catch (MalformedURLException e) {
             e.printStackTrace();
         }
-        Looper.loop();
     }
 
 
-
-    interface Rückruf {
+    interface Download_Callback {
 
         void onPostExecute(Bitmap result);
 

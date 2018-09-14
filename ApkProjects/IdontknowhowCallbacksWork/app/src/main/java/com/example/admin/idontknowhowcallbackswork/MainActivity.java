@@ -1,9 +1,11 @@
 package com.example.admin.idontknowhowcallbackswork;
 
+import android.graphics.Bitmap;
+import android.os.Bundle;
 import android.os.Handler;
 import android.support.v7.app.AppCompatActivity;
-import android.os.Bundle;
 import android.util.Log;
+import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -59,14 +61,34 @@ public class MainActivity extends AppCompatActivity {
             }
         };
 
-        workerThread = new WorkerThread("Fred");
+        MyExecutor executor = new MyExecutor();
 
-        Log.d(TAG, "onCreate: "+workerThread.getLooper());
+        DownloadTask downloadTask = new DownloadTask(new DownloadTask.Download_Callback() {
+            @Override
+            public void onPostExecute(final Bitmap result) {
 
-        workerThread.start();
-        workerThread.prepareHandler();
-        workerThread.postTask(task);
-        workerThread.postTask(task);
+                final ImageView imageView = findViewById(R.id.imageView);
+
+                mUiHandler.post(new Runnable() {
+                    @Override
+                    public void run() {
+
+                        imageView.setImageBitmap(result);
+                    }
+                });
+
+            }
+
+            @Override
+            public void onFailure() {
+
+            }
+        });
+
+
+        executor.executeInBackground(task);
+        executor.executeInBackground(downloadTask);
+
 
     }
 

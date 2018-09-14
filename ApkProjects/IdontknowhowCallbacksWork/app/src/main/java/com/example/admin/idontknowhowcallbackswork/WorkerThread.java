@@ -2,15 +2,7 @@ package com.example.admin.idontknowhowcallbackswork;
 
 import android.os.Handler;
 import android.os.HandlerThread;
-import android.os.Looper;
-import android.os.Message;
-import android.support.annotation.NonNull;
-import android.support.annotation.Nullable;
 import android.util.Log;
-
-import java.util.concurrent.Executor;
-import java.util.concurrent.ThreadPoolExecutor;
-import java.util.concurrent.TimeUnit;
 
 /**
  * Created by Admin on 14.09.2018.
@@ -29,7 +21,13 @@ public class WorkerThread extends HandlerThread{
 
     public void prepareHandler(){
 
-        backGroundHandler = new Handler(getLooper());
+        try {
+
+            backGroundHandler = new Handler(getLooper());
+        } catch (NullPointerException ex) {
+
+            Log.e(TAG, "getLooper() ist null ", null);
+        }
     }
 
 
