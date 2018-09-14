@@ -1,6 +1,9 @@
 package com.example.admin.idontknowhowcallbackswork;
 
 import android.graphics.Bitmap;
+import android.os.Handler;
+import android.os.Looper;
+import android.util.Log;
 
 import java.net.MalformedURLException;
 
@@ -24,12 +27,13 @@ public class DownloadTask implements Runnable {
 
         Bitmap downloadedPicture;
         try {
+            Log.d(TAG, "Thread mit dem Namen " + Thread.currentThread().getName());
 
             downloadedPicture = Connection.downloadPicture("http://hintergrundbild.org/wallpaper/full/8/2/b/35334-tuerkis-hintergrundbilder-2048x1152-iphone.jpg");
 
            if(downloadedPicture != null){
 
-               callback.onPostExecute(downloadedPicture);
+               postResult(downloadedPicture);
            } else {
                callback.onFailure();
            }
@@ -37,6 +41,20 @@ public class DownloadTask implements Runnable {
         } catch (MalformedURLException e) {
             e.printStackTrace();
         }
+    }
+
+
+    private void postResult(final Bitmap result){
+
+        Handler mainHandler = new Handler(Looper.getMainLooper());
+
+        mainHandler.post(new Runnable() {
+            @Override
+            public void run() {
+                callback.onPostExecute(result);
+            }
+        });
+
     }
 
 

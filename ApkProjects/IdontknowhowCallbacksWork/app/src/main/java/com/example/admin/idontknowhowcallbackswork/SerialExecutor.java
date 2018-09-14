@@ -8,15 +8,16 @@ import java.util.concurrent.Executor;
  * Created by Admin on 14.09.2018.
  */
 
-public class MyExecutor implements Executor {
+public class SerialExecutor implements Executor {
 
     private WorkerThread handlerThread;
 
-    public MyExecutor() {
+    public SerialExecutor() {
 
         handlerThread = new WorkerThread("Fred");
         handlerThread.start();
         handlerThread.prepareHandler();
+
     }
 
 
@@ -29,4 +30,12 @@ public class MyExecutor implements Executor {
 
         handlerThread.postTask(runnable);
     }
+
+    public void execThreadPerTask(@NonNull Runnable runnable){
+
+        Thread newThread = new Thread(runnable);
+
+        newThread.start();
+    }
+
 }

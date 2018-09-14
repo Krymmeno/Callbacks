@@ -7,7 +7,8 @@ import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
 import android.widget.ImageView;
 import android.widget.TextView;
-import android.widget.Toast;
+
+import java.util.concurrent.ScheduledThreadPoolExecutor;
 
 //https://github.com/googlesamples/android-MediaBrowserService/
 public class MainActivity extends AppCompatActivity {
@@ -28,66 +29,65 @@ public class MainActivity extends AppCompatActivity {
         Runnable task = new Runnable() {
             @Override
             public void run() {
-                for (int i = 0; i < 4; i++) {
+
+                Log.d(TAG, "Thread mit dem Namen "+Thread.currentThread().getName());
+
+                for (int i = 0; i < 10; i++) {
                     try {
                         Thread.sleep(1000);
                     } catch (InterruptedException e) {
                         e.printStackTrace();
                     }
-                    if (i == 2) {
-
                         Log.d(TAG, "run: "+i);
 
-                        mUiHandler.post(new Runnable() {
-                            @Override
-                            public void run() {
-                                Toast.makeText(MainActivity.this,
-                                        "I am at the middle of background task",
-                                        Toast.LENGTH_LONG)
-                                        .show();
-                            }
-                        });
-                    }
                 }
                 mUiHandler.post(new Runnable() {
                     @Override
                     public void run() {
-                        Toast.makeText(MainActivity.this,
-                                "Background task is completed",
-                                Toast.LENGTH_LONG)
-                                .show();
+                        Log.d(TAG, "run: finished");
                     }
                 });
             }
         };
 
-        MyExecutor executor = new MyExecutor();
+        SerialExecutor serialExecutor = new SerialExecutor();
 
         DownloadTask downloadTask = new DownloadTask(new DownloadTask.Download_Callback() {
+
+            /**
+             *
+             * Runs on MainThread
+             * @param result
+             */
+
             @Override
             public void onPostExecute(final Bitmap result) {
 
                 final ImageView imageView = findViewById(R.id.imageView);
 
-                mUiHandler.post(new Runnable() {
-                    @Override
-                    public void run() {
 
                         imageView.setImageBitmap(result);
-                    }
-                });
+                }
 
-            }
-
+            /**
+             *
+             * Still runs on BackgroundThread
+             */
             @Override
             public void onFailure() {
 
             }
         });
 
+        ScheduledThreadPoolExecutor threadPoolExecutor = new ScheduledThreadPoolExecutor(2);
 
-        executor.executeInBackground(task);
-        executor.executeInBackground(downloadTask);
+
+        serialExecutor.executeInBackground(task);
+
+
+
+
+
 
 
     }
